@@ -35,6 +35,8 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'jazzmin',
+    'corsheaders',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -52,6 +54,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 AUTH_USER_MODEL = 'base.User'
@@ -132,6 +136,8 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/uploads/'
 
 MEDIA_ROOT = PROJECT_ROOT / 'static/uploads'
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Default primary key field type

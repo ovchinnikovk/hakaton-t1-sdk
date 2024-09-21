@@ -35,12 +35,11 @@ class User(AbstractUser):
 class Answers(models.Model):
     title = models.CharField(max_length=250, blank=True, null=True)
     answer = models.CharField(max_length=250, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    DisplayFields = ['id', 'title', 'answer', 'description', 'created', 'updated']
+    DisplayFields = ['id', 'title', 'answer', 'created', 'updated']
     SearchableFields = DisplayFields
     FilterFields = ['created', 'updated']
 
@@ -50,18 +49,24 @@ class Answers(models.Model):
         verbose_name_plural = 'Answers'
 
     def __str__(self):
-        return self.title
+        return self.answer
 
 
 class Questions(models.Model):
     title = models.CharField(max_length=250, blank=True, null=True)
-    question = models.CharField(max_length=250, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+    number = models.DecimalField(
+        max_digits=100,
+        decimal_places=0,
+        blank=True, null=True,
+        validators=[validate_non_negative]
+    )
+    question = models.TextField(blank=True, null=True)
+    answers = models.ManyToManyField(Answers, related_name='r_answers', blank=True)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    DisplayFields = ['id', 'title', 'question', 'description', 'created', 'updated', 'tags', 'width', 'height']
+    DisplayFields = ['id', 'title', 'number', 'question', 'created', 'updated']
     SearchableFields = DisplayFields
     FilterFields = ['created', 'updated']
 
@@ -71,6 +76,4 @@ class Questions(models.Model):
         verbose_name_plural = 'Questions'
 
     def __str__(self):
-        return self.title
-
-
+        return self.question

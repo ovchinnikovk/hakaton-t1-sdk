@@ -1,5 +1,4 @@
-*
-{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -9,4 +8,29 @@
     font-family: "Roboto", sans-serif;
     font-weight: 400;
     font-style: normal;
+}
+
+.voting-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+.voting-btn .btn {
+    background-color: #FF69B4;
+    border-color: #FF69B4;
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 0.8rem 1.5rem;
+}
+
+.voting-btn .btn:hover {
+    background-color: #FF1493;
+}
+
+.question-container {
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #f0f8ff;
+    border: 1px solid #add8e6;
 }
