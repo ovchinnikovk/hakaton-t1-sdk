@@ -1,11 +1,10 @@
 import json
-from itertools import count
-
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from .coreutils import categorize_kano_and_plot
 from . import models
-
+from django.db.models import Max
 
 def main(request):
     questions = models.Questions.objects.all()
@@ -20,6 +19,22 @@ def post_order(request):
         try:
             data = json.loads(request.body)
             selected_options = data.get('result')
+
+            query = models.Results.objects.filter(questions=1)
+            print(query)
+
+            # result = list(map(int, models.Answers.objects.values_list('answer', flat=True)))
+            #
+            # max_answer = int(models.Answers.objects.aggregate(Max('answer'))['answer__max'])
+            # max_70_percent = int(max_answer) * 0.7
+            # max_50_percent = int(max_answer) * 0.5
+
+            # Пример данных
+            # innovations_data = { # ДАННЫЕ С БД
+            #     "Нововведение 1": result,
+            # }
+            #
+            # categorize_kano_and_plot(innovations_data, max_70_percent, max_50_percent, max_answer)
 
             for question_id, answer in selected_options.items():
                 question = models.Questions.objects.get(id=int(question_id))

@@ -102,7 +102,7 @@ class Results(models.Model):
         verbose_name_plural = 'Results'
 
     def __str__(self):
-        return self.questions
+        return self.questions.question
     
 
 class Reports(models.Model):
@@ -122,4 +122,4 @@ class Reports(models.Model):
         verbose_name_plural = 'Reports'
 
     def __str__(self):
-        return f"Отчет №{self.id}"
+        return f'Отчет №{self.id}'
