@@ -2,21 +2,22 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
+from datetime import datetime
 
-def get_next_folder_number(base_folder='kano_results'):
+def get_timestamped_folder_name(base_folder='Результаты_опроса'):
     """
-    Функция для получения следующего доступного номера папки для сохранения результатов.
-    Проверяет существующие папки и находит максимальный номер.
-
-    :param base_folder: Имя базовой папки.
-    :return: Следующий доступный номер папки.
+    Функция для получения имени папки с текущей датой и временем.
+    
+    :param base_folder: Имя базовой папки для сохранения результатов.
+    :return: Имя папки с меткой времени.
     """
     if not os.path.exists(base_folder):
         os.makedirs(base_folder)  # Создаем базовую папку, если она не существует
-        return 1  # Если папок не было, возвращаем первый номер
 
-    existing_folders = [int(d) for d in os.listdir(base_folder) if d.isdigit()]
-    return max(existing_folders, default=0) + 1  # Возвращаем следующий номер
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')  # Форматирование даты и времени
+    folder_name = os.path.join(base_folder, timestamp)  # Полное имя папки
+    os.makedirs(folder_name, exist_ok=True)  # Создаем папку с меткой времени
+    return folder_name
 
 def categorize_kano_and_plot(innovations):
     """
@@ -54,13 +55,11 @@ def categorize_kano_and_plot(innovations):
     # Преобразуем результаты в DataFrame
     df = pd.DataFrame(results)
 
-    # Получаем следующий номер папки
-    folder_number = get_next_folder_number()
-    folder_name = os.path.join('kano_results', str(folder_number))  # Формируем имя папки
-    os.makedirs(folder_name, exist_ok=True)  # Создаем папку
-
+    # Получаем папку с текущей датой и временем
+    folder_name = get_timestamped_folder_name()
+    
     # Сохраняем результаты в CSV файл с разделителем ';'
-    output_file = os.path.join(folder_name, 'kano_results.csv')
+    output_file = os.path.join(folder_name, 'Таблица_результатов.csv')
     df.to_csv(output_file, sep=';', index=False)
 
     # Визуализация с использованием Seaborn
@@ -83,7 +82,7 @@ def categorize_kano_and_plot(innovations):
     plt.tight_layout()
 
     # Сохраняем график как изображение
-    plot_file = os.path.join(folder_name, 'kano_plot.png')
+    plot_file = os.path.join(folder_name, 'Кано.png')
     plt.savefig(plot_file)
     plt.close()  # Закрываем фигуру после сохранения
 
@@ -96,7 +95,7 @@ def categorize_kano_and_plot(innovations):
     return results
 
 # Пример данных
-innovations_data = {
+innovations_data = { # ДАННЫЕ С БД
     "Нововведение 1": [5, 4, 5, 4, 5, 2, 2],
     "Нововведение 2": [2, 2, 3],
     "Нововведение 3": [5, 5, 5, 5],
