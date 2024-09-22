@@ -1,25 +1,25 @@
 {% extends 'index.htm' %}
 {% load static %}
 {% block content %}
-    <div class="container my-5">
-        <h1 class="mb-4">Голосование</h1>
-        <form type="post">
-            {% csrf_token %}
+    <div class="wrapper">
+        <form class="container" type="post" id="vote">
             {% for question in questions %}
-                <div class="question-container">
-                    <h5>{{ question.question }}</h5>
+                <p class="heading">{{ question.question }}</p>
+                <div class="vote_block">
+                    <p class="question"></p>
+                    {% csrf_token %}
                     {% for answer in question.answers.all %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="question" id="question1-yes" value="yes">
-                            <label class="form-check-label" for="question1-yes">
-                                {{ answer.answer }}
+                        <div class="option">
+                            <label>
+                                <input type="radio" class="scales" name="scales" value="{{ answer.answer }}">{{ answer.answer }}
                             </label>
+                            <p>{{ answer.description }}</p>
                         </div>
                     {% endfor %}
                 </div>
             {% endfor %}
-            <div class="voting-btn">
-                <button type="submit" class="btn btn-primary">Отправить ответы</button>
+            <div class="btn_block">
+                <button form="vote" type="submit" class="submit_btn">Отправить</button>
             </div>
         </form>
     </div>

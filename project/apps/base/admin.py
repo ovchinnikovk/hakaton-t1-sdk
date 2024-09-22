@@ -21,3 +21,10 @@ class QuestionsAdmin(admin.ModelAdmin):
     list_display = models.Questions.DisplayFields
     search_fields = models.Questions.SearchableFields
     list_filter = models.Questions.FilterFields
+
+
+@admin.register(models.Results)
+class ResultsAdmin(admin.ModelAdmin):
+    list_display = models.Results.DisplayFields
+    search_fields = models.Results.SearchableFields
+    list_filter = models.Results.FilterFields

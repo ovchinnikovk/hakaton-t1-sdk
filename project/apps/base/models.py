@@ -1,3 +1,4 @@
+from django.contrib.staticfiles.views import serve
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
@@ -5,7 +6,13 @@ from django.utils.translation import gettext_lazy as _
 
 def validate_non_negative(value):
     if value < 0:
-        raise ValueError(_('Баланс не может быть отрицательным.'))
+        raise ValueError(_('Значение не может быть отрицательным.'))
+
+
+def validate_higher_value(value):
+    if value > 10:
+        raise ValueError(_('Значение не может быть больше 10.'))
+
 
 
 class User(AbstractUser):
@@ -33,13 +40,19 @@ class User(AbstractUser):
 
 
 class Answers(models.Model):
-    title = models.CharField(max_length=250, blank=True, null=True)
     answer = models.CharField(max_length=250, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    priority = models.DecimalField(
+        max_digits=2,
+        decimal_places=0,
+        blank=True, null=True,
+        validators=[validate_higher_value, validate_non_negative]
+    )
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    DisplayFields = ['id', 'title', 'answer', 'created', 'updated']
+    DisplayFields = ['id', 'answer', 'description', 'priority', 'created', 'updated']
     SearchableFields = DisplayFields
     FilterFields = ['created', 'updated']
 
@@ -49,11 +62,10 @@ class Answers(models.Model):
         verbose_name_plural = 'Answers'
 
     def __str__(self):
-        return self.answer
+        return self.priority
 
 
 class Questions(models.Model):
-    title = models.CharField(max_length=250, blank=True, null=True)
     number = models.DecimalField(
         max_digits=100,
         decimal_places=0,
@@ -62,11 +74,17 @@ class Questions(models.Model):
     )
     question = models.TextField(blank=True, null=True)
     answers = models.ManyToManyField(Answers, related_name='r_answers', blank=True)
+    priority = models.DecimalField(
+        max_digits=2,
+        decimal_places=0,
+        blank=True, null=True,
+        validators=[validate_higher_value, validate_non_negative]
+    )
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    DisplayFields = ['id', 'title', 'number', 'question', 'created', 'updated']
+    DisplayFields = ['id', 'number', 'question', 'priority', 'created', 'updated']
     SearchableFields = DisplayFields
     FilterFields = ['created', 'updated']
 
@@ -77,3 +95,28 @@ class Questions(models.Model):
 
     def __str__(self):
         return self.question
+    
+
+class Results(models.Model):
+    option = models.CharField(max_length=250, blank=True, null=True)
+    count = models.DecimalField(
+        max_digits=100,
+        decimal_places=0,
+        blank=True, null=True,
+        validators=[validate_non_negative]
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    DisplayFields = ['id', 'option', 'count', 'created', 'updated']
+    SearchableFields = DisplayFields
+    FilterFields = ['created', 'updated']
+
+    class Meta:
+        ordering = ['id', '-updated']
+        verbose_name = 'Result'
+        verbose_name_plural = 'Results'
+
+    def __str__(self):
+        return self.option
