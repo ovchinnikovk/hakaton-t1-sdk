@@ -18,23 +18,37 @@ let send_form = document.getElementById('vote');
 
 send_form.addEventListener('submit', async (event) => {
     event.preventDefault();
+    
+    let selectedOptions = {};
 
-    const formData = new FormData(event.target);
-    const selectedOption = formData.get('option');
+    const radioInputs = document.querySelectorAll('#vote input[type="radio"]');
+
+    radioInputs.forEach(input => {
+        if (input.checked) {
+            const name = input.name;
+            selectedOptions[name] = input.value;
+        }
+    });
+
+    console.log(selectedOptions);
 
     try {
         const response = await fetch('/post_order/', {
             method: 'POST',
-            body: JSON.stringify({ option: selectedOption }),
+            body: JSON.stringify({ result: selectedOptions }),
             headers: {
                 'X-CSRFToken': getCookie('csrftoken'),
                 'Content-Type': 'application/json',
             },
         });
 
-        response.ok ?
-            alert(`Успешно добавлено в БД.`):
-            alert('Ошибка при отправки в БД.');
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('Успешно добавлено в БД.');
+        } else {
+            alert(`Ошибка при отправке в БД: ${data.error}`);
+        }
     } catch (error) {
         console.error('Ошибка при отправке запроса:', error);
         alert('Произошла ошибка. Пожалуйста, попробуйте еще раз.');

@@ -3,17 +3,16 @@
 {% block content %}
     <div class="wrapper">
         <form class="container" type="post" id="vote">
+            {% csrf_token %}
             {% for question in questions %}
                 <p class="heading">{{ question.question }}</p>
                 <div class="vote_block">
                     <p class="question"></p>
-                    {% csrf_token %}
                     {% for answer in question.answers.all %}
                         <div class="option">
                             <label>
-                                <input type="radio" class="scales" name="scales" value="{{ answer.answer }}">{{ answer.answer }}
+                                <input type="radio" class="scales" name="{{ question.id }}" value="{{ answer.answer }}">{{ answer.description }}
                             </label>
-                            <p>{{ answer.description }}</p>
                         </div>
                     {% endfor %}
                 </div>

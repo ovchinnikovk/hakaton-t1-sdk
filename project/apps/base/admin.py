@@ -28,3 +28,10 @@ class ResultsAdmin(admin.ModelAdmin):
     list_display = models.Results.DisplayFields
     search_fields = models.Results.SearchableFields
     list_filter = models.Results.FilterFields
+
+
+@admin.register(models.Reports)
+class ReportsAdmin(admin.ModelAdmin):
+    list_display = models.Reports.DisplayFields
+    search_fields = models.Reports.SearchableFields
+    list_filter = models.Reports.FilterFields

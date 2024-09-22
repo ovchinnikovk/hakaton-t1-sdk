@@ -42,17 +42,11 @@ class User(AbstractUser):
 class Answers(models.Model):
     answer = models.CharField(max_length=250, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    priority = models.DecimalField(
-        max_digits=2,
-        decimal_places=0,
-        blank=True, null=True,
-        validators=[validate_higher_value, validate_non_negative]
-    )
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    DisplayFields = ['id', 'answer', 'description', 'priority', 'created', 'updated']
+    DisplayFields = ['id', 'answer', 'description', 'created', 'updated']
     SearchableFields = DisplayFields
     FilterFields = ['created', 'updated']
 
@@ -62,29 +56,17 @@ class Answers(models.Model):
         verbose_name_plural = 'Answers'
 
     def __str__(self):
-        return self.priority
+        return self.answer
 
 
 class Questions(models.Model):
-    number = models.DecimalField(
-        max_digits=100,
-        decimal_places=0,
-        blank=True, null=True,
-        validators=[validate_non_negative]
-    )
     question = models.TextField(blank=True, null=True)
-    answers = models.ManyToManyField(Answers, related_name='r_answers', blank=True)
-    priority = models.DecimalField(
-        max_digits=2,
-        decimal_places=0,
-        blank=True, null=True,
-        validators=[validate_higher_value, validate_non_negative]
-    )
+    answers = models.ManyToManyField(Answers, related_name='r_answers', blank=True, db_index=True)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    DisplayFields = ['id', 'number', 'question', 'priority', 'created', 'updated']
+    DisplayFields = ['id', 'question', 'created', 'updated']
     SearchableFields = DisplayFields
     FilterFields = ['created', 'updated']
 
@@ -98,7 +80,8 @@ class Questions(models.Model):
     
 
 class Results(models.Model):
-    option = models.CharField(max_length=250, blank=True, null=True)
+    questions = models.ForeignKey(Questions, on_delete=models.CASCADE, blank=True, null=True)
+    answer = models.TextField(blank=True, null=True)
     count = models.DecimalField(
         max_digits=100,
         decimal_places=0,
@@ -109,7 +92,7 @@ class Results(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    DisplayFields = ['id', 'option', 'count', 'created', 'updated']
+    DisplayFields = ['id', 'questions', 'answer', 'count', 'created', 'updated']
     SearchableFields = DisplayFields
     FilterFields = ['created', 'updated']
 
@@ -119,4 +102,24 @@ class Results(models.Model):
         verbose_name_plural = 'Results'
 
     def __str__(self):
-        return self.option
+        return self.questions
+    
+
+class Reports(models.Model):
+    csv = models.FileField(null=True, blank=True)
+    graphic = models.ImageField(default='avatar.svg', null=True, blank=True)
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    DisplayFields = ['id', 'csv', 'graphic', 'created', 'updated']
+    SearchableFields = DisplayFields
+    FilterFields = ['created', 'updated']
+
+    class Meta:
+        ordering = ['id', '-updated']
+        verbose_name = 'Reports'
+        verbose_name_plural = 'Reports'
+
+    def __str__(self):
+        return f"Отчет №{self.id}"
