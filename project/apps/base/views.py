@@ -20,21 +20,23 @@ def post_order(request):
             data = json.loads(request.body)
             selected_options = data.get('result')
 
-            query = models.Results.objects.filter(questions=1)
-            print(query)
+            outer = {}
+            query = list(models.Results.objects.values_list('id', flat=True))
 
-            # result = list(map(int, models.Answers.objects.values_list('answer', flat=True)))
-            #
-            # max_answer = int(models.Answers.objects.aggregate(Max('answer'))['answer__max'])
-            # max_70_percent = int(max_answer) * 0.7
-            # max_50_percent = int(max_answer) * 0.5
+            for i in range(0, len(query)):
+                inner = models.Results.objects.get(id=query[i])
+                temp_list = []
 
-            # Пример данных
-            # innovations_data = { # ДАННЫЕ С БД
-            #     "Нововведение 1": result,
-            # }
-            #
-            # categorize_kano_and_plot(innovations_data, max_70_percent, max_50_percent, max_answer)
+                for num in range(0, int(inner.count)):
+                    temp_list.append(inner.answer)
+
+                outer[inner.questions] = temp_list
+
+            max_answer = int(models.Answers.objects.aggregate(Max('answer'))['answer__max'])
+            max_70_percent = int(max_answer) * 0.7
+            max_50_percent = int(max_answer) * 0.5
+
+            categorize_kano_and_plot(outer, max_70_percent, max_50_percent, max_answer)
 
             for question_id, answer in selected_options.items():
                 question = models.Questions.objects.get(id=int(question_id))
